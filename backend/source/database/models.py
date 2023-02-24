@@ -1,10 +1,13 @@
-from sqlalchemy import Sequence, Column, Integer, String, Boolean, ForeignKey, Float
+from sqlalchemy import Sequence, Column, Integer, String, Boolean, ForeignKey, Float, DateTime
+from sqlalchemy.orm import relationship
+from datetime import datetime
 
 
 def models(engine, base):
     """Creating database models"""
     user_id_sequence = Sequence('user_id_sequence')
     item_id_sequence = Sequence('item_id_sequence')
+    transaction_id_sequence = Sequence('transaction_id_sequence')
 
     class Roles(base):
         """Roles table"""
@@ -32,6 +35,7 @@ def models(engine, base):
         last_name = Column(String(30))
         password = Column(String(150))
         role = Column(String, ForeignKey('roles.role', onupdate='CASCADE', ondelete='CASCADE'))
+        transaction_item = relationship('Items', secondary='transactions', backref='transaction_items')
 
         def __repr__(self):
             """Creating columns in table"""
@@ -53,3 +57,28 @@ def models(engine, base):
             return f"<Items(id={self.id}, item_name={self.item_name}, " \
                    f"item_price={self.item_price}, item_description={self.item_description}, " \
                    f"item_image_url={self.item_image_url})>"
+
+    class Transactions(base):
+        """Transactions table"""
+        __tablename__ = "transactions"
+        id = Column(Integer, transaction_id_sequence, primary_key=True,
+                    server_default=transaction_id_sequence.next_value())
+        user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
+        item_id = Column(Integer, ForeignKey('items.id', ondelete='CASCADE', onupdate='CASCADE'))
+        payment = Column(String(40))
+        transaction_time = Column(DateTime, default=datetime.now())
+        delivery_time = Column(DateTime, default=datetime.now())
+        item_price = Column(Float)
+
+        def __repr__(self):
+            return f"<Transactions(id={self.id}, user_id={self.user_id}, item_id={self.item_id}, " \
+                   f"payment={self.payment}, transaction_time={self.transaction_time}, " \
+                   f"delivery_time={self.delivery_time}, item_price={self.item_price})>"
+
+    base.metadata.create_all(engine)
+    return {
+        "users": Users,
+        "roles": Roles,
+        "items": Items,
+        "transactions": Transactions
+    }
