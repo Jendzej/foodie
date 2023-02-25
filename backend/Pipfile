@@ -8,6 +8,8 @@ fastapi = "*"
 python-dotenv = "*"
 sqlalchemy = "*"
 psycopg2-binary = "*"
+uvicorn = "*"
+python-jose = "*"
 
 [dev-packages]
 

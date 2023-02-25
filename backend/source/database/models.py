@@ -69,11 +69,12 @@ def models(engine, base):
         transaction_time = Column(DateTime, default=datetime.now())
         delivery_time = Column(DateTime, default=datetime.now())
         item_price = Column(Float)
+        count = Column(Integer)
 
         def __repr__(self):
             return f"<Transactions(id={self.id}, user_id={self.user_id}, item_id={self.item_id}, " \
                    f"payment={self.payment}, transaction_time={self.transaction_time}, " \
-                   f"delivery_time={self.delivery_time}, item_price={self.item_price})>"
+                   f"delivery_time={self.delivery_time}, item_price={self.item_price}, count={self.count})>"
 
     base.metadata.create_all(engine)
     return {

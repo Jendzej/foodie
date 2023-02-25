@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
-from models import models
+from source.database.models import models
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 import time
@@ -37,6 +37,14 @@ class Database:
             except OperationalError:
                 time.sleep(2)
                 print(f"Trying again... ({count} out of {tries} tries)")
+
+    def drop_data(self):
+        """Drop database data"""
+        session = create_session(self.engine)
+        for model in self.models.values():
+            session.query(model).delete()
+        session.commit()
+        session.close()
 
 
 def create_session(engine):
