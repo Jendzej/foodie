@@ -43,7 +43,6 @@ class Database:
         session = create_session(self.engine)
         for model in self.models.values():
             session.query(model).delete()
-        self.base.metadata.drop_all(bind=self.engine)
         session.commit()
         session.close()
 
