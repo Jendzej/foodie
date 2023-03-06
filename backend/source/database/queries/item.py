@@ -10,15 +10,15 @@ class ItemQuery:
 
     def fetch_by_name(self, item_name):
         """Fetch item details by item_name"""
-        return self.session.execute(text(f"SELECT * FROM items WHERE item_name LIKE '{item_name}'")).one()
+        return self.session.query(self.item_model).filter(self.item_model.item_name.lower() == item_name).one()
 
     def fetch_by_id(self, item_id):
         """Fetch item details by item_id"""
-        return self.session.execute(text(f"SELECT * FROM items WHERE id LIKE '{item_id}'")).all()
+        return self.session.query(self.item_model).filter(self.item_model.id == item_id).one()
 
     def fetch_all(self):
         """Fetch all items data"""
-        return self.session.execute(text("SELECT * FROM items")).all()
+        return self.session.query(self.item_model).all()
 
     def insert(self, item_name: str, item_price: float, item_description: str, item_image_url: str):
         """Add item to items table"""
@@ -33,8 +33,10 @@ class ItemQuery:
 
     def initial_data(self):
         """Create some items on start-up"""
-        print("Adding some", self.session)
-        # TODO: end this shit
+        self.insert("BOOMIN", 32.99, "Metroo mutherfucker boooomin", "https://ecsmedia.pl/c/heroes-villains-b-iext123358775.jpg")
+        self.insert("METRO", 32.99, "Metroo mutherfucker boooomin", "https://ecsmedia.pl/c/heroes-villains-b-iext123358775.jpg")
+        self.insert("FUTURE", 32.99, "Metroo mutherfucker boooomin", "https://ecsmedia.pl/c/heroes-villains-b-iext123358775.jpg")
+        self.insert("TRAVIS", 32.99, "Metroo mutherfucker boooomin", "https://ecsmedia.pl/c/heroes-villains-b-iext123358775.jpg")
 
     def update(self, item_id, new_item_data: dict):
         """Update item data in items table"""
