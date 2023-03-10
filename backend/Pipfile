@@ -10,6 +10,8 @@ sqlalchemy = "*"
 psycopg2-binary = "*"
 uvicorn = "*"
 python-jose = "*"
+passlib = "*"
+python-multipart = "*"
 
 [dev-packages]
 

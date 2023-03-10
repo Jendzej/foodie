@@ -19,9 +19,13 @@ class UserQuery:
         """Fetch one row by user_id"""
         return self.session.execute(text(f"SELECT * FROM Users WHERE id LIKE '{user_id}'")).fetchone()
 
+    def fetch_by_username(self, username):
+        """Fetch user data by username"""
+        return self.session.execute(text(f"SELECT * FROM Users WHERE username LIKE '{username}'")).fetchone()
+
     def fetch_all(self):
         """Fetch all users data"""
-        return self.session.execute(text("SELECT * FROM users")).fetchall()
+        return self.session.query(self.user_model).all()
 
     def insert(self, username, email, first_name, last_name, password, role):
         """Add data to users table"""

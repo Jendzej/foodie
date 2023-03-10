@@ -1,6 +1,7 @@
 from sqlalchemy import Sequence, Column, Integer, String, Boolean, ForeignKey, Float, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from pydantic import BaseModel
 
 
 def models(engine, base):
@@ -83,3 +84,19 @@ def models(engine, base):
         "items": Items,
         "transactions": Transactions
     }
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+
+
+class User(BaseModel):
+    id: int
+    username: str
+    mail: str
+    role: str

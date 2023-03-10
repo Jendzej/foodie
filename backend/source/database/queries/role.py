@@ -14,7 +14,7 @@ class RoleQuery:
 
     def fetch_all(self):
         """Fetch all roles data"""
-        return self.session.execute(text("SELECT * FROM roles")).fetchall()
+        return self.session.query(self.role_model).all()
 
     def insert(self, role, read=True, add=False, delete=False, update=False, only_owned=True):
         """Add role to roles table"""
