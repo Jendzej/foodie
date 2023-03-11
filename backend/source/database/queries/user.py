@@ -1,6 +1,5 @@
 from source.database import models, engine
 from source.database.Database import create_session
-from sqlalchemy.sql import text
 from jose import jwt
 import os
 from dotenv import load_dotenv
@@ -17,11 +16,11 @@ class UserQuery:
 
     def fetch(self, user_id):
         """Fetch one row by user_id"""
-        return self.session.execute(text(f"SELECT * FROM Users WHERE id LIKE '{user_id}'")).fetchone()
+        return self.session.query(self.user_model).filter(self.user_model.id == user_id).one()
 
     def fetch_by_username(self, username):
         """Fetch user data by username"""
-        return self.session.execute(text(f"SELECT * FROM Users WHERE username LIKE '{username}'")).fetchone()
+        return self.session.query(self.user_model).filter(self.user_model.username == username).one()
 
     def fetch_all(self):
         """Fetch all users data"""

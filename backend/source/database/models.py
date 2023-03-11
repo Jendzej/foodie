@@ -9,6 +9,7 @@ def models(engine, base):
     user_id_sequence = Sequence('user_id_sequence')
     item_id_sequence = Sequence('item_id_sequence')
     transaction_id_sequence = Sequence('transaction_id_sequence')
+    transaction_details_sequence = Sequence('transaction_details_sequence')
 
     class Roles(base):
         """Roles table"""
@@ -65,24 +66,35 @@ def models(engine, base):
         id = Column(Integer, transaction_id_sequence, primary_key=True,
                     server_default=transaction_id_sequence.next_value())
         user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
-        item_id = Column(Integer, ForeignKey('items.id', ondelete='CASCADE', onupdate='CASCADE'))
         payment = Column(String(40))
         transaction_time = Column(DateTime, default=datetime.now())
         delivery_time = Column(DateTime, default=datetime.now())
-        item_price = Column(Float)
-        count = Column(Integer)
 
         def __repr__(self):
-            return f"<Transactions(id={self.id}, user_id={self.user_id}, item_id={self.item_id}, " \
-                   f"payment={self.payment}, transaction_time={self.transaction_time}, " \
-                   f"delivery_time={self.delivery_time}, item_price={self.item_price}, count={self.count})>"
+            return f"<Transactions(id={self.id}, user_id={self.user_id}, payment={self.payment}" \
+                   f"transaction_time={self.transaction_time}, delivery_time={self.delivery_time})>"
+
+    class TransactionsDetails(base):
+        """Transactions table"""
+        __tablename__ = "transactions_details"
+        id = Column(Integer, transaction_id_sequence, primary_key=True,
+                    server_default=transaction_details_sequence.next_value())
+        transaction_id = Column(Integer, ForeignKey('transactions.id', ondelete='CASCADE', onupdate='CASCADE'))
+        item_id = Column(Integer, ForeignKey('items.id', ondelete='CASCADE', onupdate='CASCADE'))
+        quantity = Column(Integer)
+        item_price = Column(Float)
+
+        def __repr__(self):
+            return f"<TransactionsDetails(transaction_id={self.transaction_id}, item_id={self.item_id}, " \
+                   f"quantity={self.quantity}, item_price={self.item_price})>"
 
     base.metadata.create_all(engine)
     return {
         "users": Users,
         "roles": Roles,
         "items": Items,
-        "transactions": Transactions
+        "transactions": Transactions,
+        "transactions_details": TransactionsDetails
     }
 
 

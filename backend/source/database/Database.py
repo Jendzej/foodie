@@ -47,9 +47,11 @@ class Database:
         session.execute(text("DROP SEQUENCE IF EXISTS item_id_sequence CASCADE"))
         session.execute(text("DROP SEQUENCE IF EXISTS user_id_sequence CASCADE"))
         session.execute(text("DROP SEQUENCE IF EXISTS transaction_id_sequence CASCADE"))
+        session.execute(text("DROP SEQUENCE IF EXISTS transaction_details_sequence CASCADE"))
         session.execute(text("CREATE SEQUENCE item_id_sequence"))
         session.execute(text("CREATE SEQUENCE user_id_sequence"))
         session.execute(text("CREATE SEQUENCE transaction_id_sequence"))
+        session.execute(text("CREATE SEQUENCE transaction_details_sequence"))
         session.commit()
         session.close()
 

@@ -28,7 +28,7 @@ async def fetch_by_id(user_id: int):
     return user.fetch(user_id)
 
 
-@router.get("/{username}")
+@router.get("/username/{username}")
 async def fetch_by_username(username: str):
     """Fetch user data by username"""
     return user.fetch_by_username(username)

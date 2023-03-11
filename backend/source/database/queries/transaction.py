@@ -6,20 +6,41 @@ from source.database.Database import create_session
 class TransactionQuery:
     def __init__(self):
         self.transaction_model = models["transactions"]
+        self.transaction_details_model = models["transactions_details"]
         self.session = create_session(engine)
 
-    def fetch_by_user_id(self, transaction_time):
-        """Fetch all transaction details by transaction_time"""
-        return self.session.execute(
-            text(f"SELECT * FROM transactions WHERE transaction_time LIKE '{transaction_time}'")
+    def fetch_single_transaction_details(self, transaction_id):
+        """Fetch all transaction details by transaction_id"""
+        transaction = self.session.query(self.transaction_model).filter(
+            self.transaction_model.id == transaction_id
+        ).one()
+        transaction_details = self.session.query(self.transaction_details_model).filter(
+            self.transaction_details_model.transaction_id == transaction_id
         ).all()
+        return {
+            "general": transaction,
+            "details": transaction_details
+        }
 
     def fetch_all(self, user_id):
         """Fetch all users transactions"""
-        return self.session.execute(text(f"SELECT * FROM transactions WHERE user_id LIKE '{user_id}'")).one()
+        # TODO: Test whether it works or not
+        all_transactions = {}
+        transactions = self.session.query(self.transaction_model).filter(
+            self.transaction_model.user_id == user_id
+        ).all()
+        for single_transaction in transactions:
+            all_transactions.update({
+                single_transaction.id: {
+                    "general": single_transaction,
+                    "details": self.session.query(self.transaction_details_model).filter(self.transaction_details_model.transaction_id == single_transaction.id).all()
+                }
+            })
+        return all_transactions
 
     def insert(self, user_id, item_id, payment, transaction_time, delivery_time, item_price, count):
         """Add transaction to transactions table"""
+        # TODO: remake this into two tables
         self.session.add(self.transaction_model(
             user_id=user_id,
             item_id=item_id,
@@ -32,20 +53,4 @@ class TransactionQuery:
         self.session.commit()
         self.session.close()
 
-    def update(self, transaction_time, new_transaction_data: dict):
-        """Update transaction data in transactions table"""
-        all_transaction = self.session.execute(text(f"SELECT * FROM transactions WHERE transaction_time LIKE '{transaction_time}'")).all()
-        for transaction in all_transaction:
-            transaction.update(new_transaction_data)
-        self.session.commit()
-        self.session.close()
-
-    def delete(self, transaction_time):
-        """Delete transaction by transaction_time"""
-        all_transaction = self.session.execute(
-            text(f"SELECT * FROM transactions WHERE transaction_time LIKE '{transaction_time}'")).all()
-        for transaction in all_transaction:
-            transaction.delete()
-
-        self.session.commit()
-        self.session.close()
+# TODO: Write update and delete queries

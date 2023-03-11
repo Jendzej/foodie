@@ -9,7 +9,10 @@ from source.routers.roles import router as roles_router
 from source.database import database
 
 role = RoleQuery()
-app = FastAPI()
+app = FastAPI(
+    title="FoodieAPI",
+    description="API for best e-commerce shop"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,7 +22,7 @@ app.add_middleware(
 )
 
 
-@app.get("/drop_db")
+@app.get("/drop_db", tags=["general"])
 async def drop_database():
     database.drop_data()
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from source.database.queries.item import ItemQuery
 
 router = APIRouter(
@@ -6,6 +6,13 @@ router = APIRouter(
 )
 
 item = ItemQuery()
+
+example_Item = Body(example={
+    "item_name": "item_name",
+    "item_price": 10.99,
+    "item_description": "item_description",
+    "item_image_url": "www.url-image .com"
+})
 
 
 @router.on_event("startup")
@@ -29,6 +36,6 @@ async def fetch_all():
 
 
 @router.post("/")
-async def insert(item_data: dict):
+async def insert(item_data: dict = example_Item):
     item_name, item_price, item_description, item_image_url = item_data.values()
     item.insert(item_name, item_price, item_description, item_image_url)
