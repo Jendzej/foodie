@@ -10,7 +10,7 @@ class ItemQuery:
 
     def fetch_by_name(self, item_name):
         """Fetch item details by item_name"""
-        return self.session.query(self.item_model).filter(self.item_model.item_name.lower() == item_name).one()
+        return self.session.query(self.item_model).filter(self.item_model.item_name == item_name).one()
 
     def fetch_by_id(self, item_id):
         """Fetch item details by item_id"""

@@ -1,4 +1,4 @@
-from sqlalchemy import Sequence, Column, Integer, String, Boolean, ForeignKey, Float, DateTime
+from sqlalchemy import Sequence, Column, Integer, String, Boolean, ForeignKey, Float, DateTime, text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from pydantic import BaseModel
@@ -37,7 +37,6 @@ def models(engine, base):
         last_name = Column(String(30))
         password = Column(String(150))
         role = Column(String, ForeignKey('roles.role', onupdate='CASCADE', ondelete='CASCADE'))
-        transaction_item = relationship('Items', secondary='transactions', backref='transaction_items')
 
         def __repr__(self):
             """Creating columns in table"""
@@ -77,7 +76,7 @@ def models(engine, base):
     class TransactionsDetails(base):
         """Transactions table"""
         __tablename__ = "transactions_details"
-        id = Column(Integer, transaction_id_sequence, primary_key=True,
+        id = Column(Integer, transaction_details_sequence, primary_key=True,
                     server_default=transaction_details_sequence.next_value())
         transaction_id = Column(Integer, ForeignKey('transactions.id', ondelete='CASCADE', onupdate='CASCADE'))
         item_id = Column(Integer, ForeignKey('items.id', ondelete='CASCADE', onupdate='CASCADE'))
@@ -85,7 +84,7 @@ def models(engine, base):
         item_price = Column(Float)
 
         def __repr__(self):
-            return f"<TransactionsDetails(transaction_id={self.transaction_id}, item_id={self.item_id}, " \
+            return f"<TransactionsDetails(id={self.id}, transaction_id={self.transaction_id}, item_id={self.item_id}, " \
                    f"quantity={self.quantity}, item_price={self.item_price})>"
 
     base.metadata.create_all(engine)

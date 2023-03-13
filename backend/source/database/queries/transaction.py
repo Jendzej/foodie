@@ -6,6 +6,7 @@ from source.database.Database import create_session
 class TransactionQuery:
     def __init__(self):
         self.transaction_model = models["transactions"]
+        self.item_model = models["items"]
         self.transaction_details_model = models["transactions_details"]
         self.session = create_session(engine)
 
@@ -33,24 +34,45 @@ class TransactionQuery:
             all_transactions.update({
                 single_transaction.id: {
                     "general": single_transaction,
-                    "details": self.session.query(self.transaction_details_model).filter(self.transaction_details_model.transaction_id == single_transaction.id).all()
+                    "details": self.session.query(self.transaction_details_model).filter(
+                        self.transaction_details_model.transaction_id == single_transaction.id
+                    ).all()
                 }
             })
         return all_transactions
 
-    def insert(self, user_id, item_id, payment, transaction_time, delivery_time, item_price, count):
+    def insert(self, user_id, item_id, payment, transaction_time, delivery_time, quantity):
         """Add transaction to transactions table"""
-        # TODO: remake this into two tables
         self.session.add(self.transaction_model(
             user_id=user_id,
-            item_id=item_id,
             payment=payment,
             transaction_time=transaction_time,
-            delivery_time=delivery_time,
-            item_price=item_price,
-            count=count
+            delivery_time=delivery_time
+        ))
+        self.session.commit()
+        transaction_id = self.session.query(self.transaction_model)\
+            .order_by(self.transaction_model.id.desc()).first().id
+        item_price = self.session.query(self.item_model).filter(self.item_model.id == item_id).one().item_price
+        self.session.add(self.transaction_details_model(
+            transaction_id=transaction_id,
+            item_id=item_id,
+            quantity=quantity,
+            item_price=item_price
         ))
         self.session.commit()
         self.session.close()
 
-# TODO: Write update and delete queries
+    def update(self, transaction_id: int, new_transaction_data: dict):
+        """Update transaction with id 'transaction_id' with 'new_transaction_data' dictionary"""
+        transaction_to_update = self.session.query(self.transaction_model).filter(
+            self.transaction_model.id == transaction_id).one()
+        transaction_to_update.update(new_transaction_data)
+        self.session.commit()
+        self.session.close()
+
+    def delete(self, transaction_id):
+        transaction_to_delete = self.session.query(self.transaction_model).filter(
+            self.transaction_model.id == transaction_id).one()
+        self.session.delete(transaction_to_delete)
+        self.session.commit()
+        self.session.close()

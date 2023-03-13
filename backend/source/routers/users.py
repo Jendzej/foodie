@@ -1,3 +1,5 @@
+import time
+
 from fastapi import APIRouter, Body
 from source.database.queries.user import UserQuery
 import os

@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, MetaData, text
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
@@ -44,6 +44,13 @@ class Database:
         session = create_session(self.engine)
         for model in self.models.values():
             session.query(model).delete()
+        session.commit()
+        session.close()
+        self.drop_sequences()
+
+    def drop_sequences(self):
+        """Recreate sequences"""
+        session = create_session(self.engine)
         session.execute(text("DROP SEQUENCE IF EXISTS item_id_sequence CASCADE"))
         session.execute(text("DROP SEQUENCE IF EXISTS user_id_sequence CASCADE"))
         session.execute(text("DROP SEQUENCE IF EXISTS transaction_id_sequence CASCADE"))
